@@ -4,12 +4,14 @@ Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i
 
 It's not done, just need a version control.
 
+Commandline parameter will be increased.
 ```bash
 ./pacg --help             
 Usage of ./pacg:
   -n int
     	how much proxys do you want to use (default 2)
 
+Example:
 ```bash
 ./pacg       
 ProxyChain auto config generator.
