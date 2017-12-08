@@ -10,6 +10,7 @@ Commandline parameter will be increased.
 Usage of ./pacg:
   -n int
     	how much proxys do you want to use (default 2)
+```
 
 Example:
 ```bash
@@ -25,3 +26,4 @@ map[ip:[77.244.42.55 121.52.141.104] country:[UA ID] port:[8080 8080] protocol:[
 [-]  121.52.141.104  latency > 200ms
 77.244.42.55:8080 open, time= 64.135386ms
 121.52.141.104:8080 open, time= 283.265037ms
+```
