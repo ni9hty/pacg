@@ -4,7 +4,7 @@ Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i
 
 Should be easy work on debian based Linux systems.
 
-It's far away from to be done, i just need a version control.
+It's far away from to be done, a version contol was needed. Automatic config deploy should be the next.
 
 Commandline parameter will be increased.
 ```bash
