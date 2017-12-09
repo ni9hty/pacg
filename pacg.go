@@ -252,7 +252,7 @@ func check_proxys(proxy_map map[string][]string) {
 		_, err := net.DialTimeout("tcp", con_string, time.Second*5)
 		if err != nil {
 			fmt.Println("Proxy not available ", err)
-			//here implement new try until len(proxy_map) is satisfied
+			//here implement new try until len(proxy_map) ends
 		} else {
 			//fmt.Println(con_string, " is open")
 			results["con_string"] = append(results["con_string"], con_string)
