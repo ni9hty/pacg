@@ -28,7 +28,7 @@ map[ip:[77.244.42.** 121.52.141.***] country:[UA ID] port:[8080 8080] protocol:[
 121.52.141.***:8080 open, time= 283.265037ms
 ```
 
-###Brainstorm notes
+### Brainstorm notes
 - [x] Parameter how many jumps in your chain do you want
 - [x] Check local permission conditions
 - [x] Proxy availability + latency check
