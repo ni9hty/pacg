@@ -198,6 +198,7 @@ request:
 	return proxys
 }
 
+//for possible later usage
 func create_filtered_json(output *simplejson.Json) {
 	b, _ := output.EncodePretty()
 	var _, err = os.Stat("tmp_proxys.json")
@@ -248,9 +249,10 @@ func check_proxys(proxy_map map[string][]string) {
 	i := 0
 	for _, _ = range proxy_map["ip"] {
 		con_string := fmt.Sprint(proxy_map["ip"][i], ":", proxy_map["port"][i])
-		_, err := net.DialTimeout("tcp", con_string, time.Second*10)
+		_, err := net.DialTimeout("tcp", con_string, time.Second*5)
 		if err != nil {
 			fmt.Println("Proxy not available ", err)
+			//here implement new try until len(proxy_map) is satisfied
 		} else {
 			//fmt.Println(con_string, " is open")
 			results["con_string"] = append(results["con_string"], con_string)
@@ -265,11 +267,13 @@ func check_proxys(proxy_map map[string][]string) {
 }
 
 func generate_config(proxychain string) {
-	/*content, err := ioutil.ReadFile("/etc/proxychains.conf")
+	content, err := ioutil.ReadFile("/etc/proxychains.conf")
 	if err != nil {
 		fmt.Println(color.LightRed("[-] "), "Could not read config file ", err)
 	}
-	lastIndex_raute := strings.LastIndex(to.String(content), "#")*/
+	lastIndex_raute := strings.LastIndex(to.String(content), "#")
+	fmt.Println("Raute: ", lastIndex_raute)
+
 }
 
 func main() {
@@ -290,9 +294,9 @@ func main() {
 		e.Close()
 	}
 
-	pc_executeable := check_enviroment()
+	pc_exec := check_enviroment()
 	proxys_map = gimmeproxy(*howmuch)
 	check_proxys(proxys_map)
-	generate_config(pc_executeable)
+	generate_config(pc_exec)
 
 }
