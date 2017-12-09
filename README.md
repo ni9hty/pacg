@@ -2,7 +2,9 @@
 
 Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i was too lazy to search for valid proxys and put them into my config. It's a golang script which check several conditions to be ready to work, grep some proxys from [gimmeproxy API](https://gimmeproxy.com/) and write a custom proxychain config. 
 
-It's far away from to be done, just need a version control.
+Should be easy work on debian based Linux systems.
+
+It's far away from to be done, i just need a version control.
 
 Commandline parameter will be increased.
 ```bash
