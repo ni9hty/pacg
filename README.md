@@ -35,3 +35,5 @@ map[ip:[77.244.42.** 121.52.141.***] country:[UA ID] port:[8080 8080] protocol:[
 - [x] implemented [goeip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo)
 - [ ] implement parameter through how many countrys you want to chain, with latency checks (min/max) condition (if not fast enough, get a new one
 - [ ] implement other free proxy sources (like modules) to be more flexible
+
+Feel free to comment or PR if you like.
