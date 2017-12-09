@@ -33,7 +33,7 @@ map[ip:[77.244.42.** 121.52.141.***] country:[UA ID] port:[8080 8080] protocol:[
 - [x] Check local permission conditions
 - [x] if two request result the same proxy ip via the api, result in a new check 
 - [x] implemented [goeip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
-- [-] Proxy availability + latency check, if proxy timeout, get a new one (timeout already catched)
+- [ ] Proxy availability + latency check, if proxy timeout, get a new one (timeout already catched)
 - [ ] implement parameter through how many countrys you want to chain, with latency checks (min/max) condition (if not fast enough, get a new one)
 - [ ] implement other free proxy sources (like modules) to be more flexible
 
