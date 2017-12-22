@@ -30,12 +30,15 @@ Checking enviroment ..
 [+]  /etc/proxychains.conf successfully written.
 ```
 
-### Brainstorm & notes
+### already Done
 - [x] Parameter how many jumps in your chain do you want
 - [x] Check local permission conditions
-- [x] if two request result the same proxy ip via the api, result in a new check 
+- [x] if a request result the same proxy ip already checked via the api, result in a new check 
 - [x] implemented [goeip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
 - [ ] Proxy availability + latency check, if proxy timeout or to slow, get a new one (both conditions already catched)
+
+### Brainstorm & notes
+- [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
 - [ ] implement parameter through how many countrys you want to chain, with latency checks (min/max) condition (if not fast enough, get a new one)
 - [ ] implement other free proxy sources (like modules) to be more flexible
 
