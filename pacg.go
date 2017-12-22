@@ -247,25 +247,28 @@ func check_proxys(proxy_map map[string][]string) {
 
 	//check if port open
 	i := 0
+	country := ""
 	for _, _ = range proxy_map["ip"] {
+		country = ""
 		con_string := fmt.Sprint(proxy_map["ip"][i], ":", proxy_map["port"][i])
 		_, err := net.DialTimeout("tcp", con_string, time.Second*5)
 		if err != nil {
 			fmt.Println("Proxy not available ", err)
 			//here implement new try until len(proxy_map) ends
 		} else {
-			//fmt.Println(con_string, " is open")
 			results["con_string"] = append(results["con_string"], con_string)
 			results["ip"] = append(results["ip"], proxy_map["ip"][i])
 			results["port"] = append(results["port"], proxy_map["port"][i])
 			results["protocol"] = append(results["protocol"], proxy_map["protocol"][i])
-			results["country"] = append(results["country"], proxy_map["country"][i])
+			results["tld"] = append(results["tld"], proxy_map["country"][i])
+			country = geoip_request(proxy_map["ip"][i])
+			results["country"] = append(results["country"], country)
 		}
 		i++
 	}
 
 	for j := 0; j < len(results["con_string"]); j++ {
-		fmt.Println(results["con_string"][j], "open, time=", results["time"][j], "in", results["country"][j])
+		fmt.Println(results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
 	}
 
 	generate_config(results)
