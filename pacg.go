@@ -193,8 +193,7 @@ request:
 		create_filtered_json(out)
 		goto request
 	}
-	fmt.Println(proxys)
-	//check_proxys(proxys)
+	//fmt.Println(proxys)
 	return proxys
 }
 
@@ -239,6 +238,7 @@ func check_proxys(proxy_map map[string][]string) {
 			//fmt.Println(pkt.Nbytes, "bytes from", pkt.IPAddr, "time=", pkt.Rtt)
 			if pkt.Rtt > time.Millisecond*200 {
 				fmt.Println(color.GGreen("[-] "), ip, " latency > 200ms")
+				//here if latency condition kicks in, get a new one until len(proxy_map) ends
 			}
 			results["time"] = append(results["time"], to.String(pkt.Rtt))
 		}
@@ -256,24 +256,43 @@ func check_proxys(proxy_map map[string][]string) {
 		} else {
 			//fmt.Println(con_string, " is open")
 			results["con_string"] = append(results["con_string"], con_string)
+			results["ip"] = append(results["ip"], proxy_map["ip"][i])
+			results["port"] = append(results["port"], proxy_map["port"][i])
+			results["protocol"] = append(results["protocol"], proxy_map["protocol"][i])
+			results["country"] = append(results["country"], proxy_map["country"][i])
 		}
 		i++
 	}
 
 	for j := 0; j < len(results["con_string"]); j++ {
-		fmt.Println(results["con_string"][j], "open, time=", results["time"][j])
+		fmt.Println(results["con_string"][j], "open, time=", results["time"][j], "in", results["country"][j])
 	}
 
+	generate_config(results)
 }
 
-func generate_config(proxychain string) {
-	content, err := ioutil.ReadFile("/etc/proxychains.conf")
+func generate_config(rein map[string][]string) {
+	err := os.Truncate("/etc/proxychains.conf", 0)
 	if err != nil {
-		fmt.Println(color.LightRed("[-] "), "Could not read config file ", err)
+		fmt.Println(color.LightRed("[-] "), "Could not reset config file ", err)
 	}
-	lastIndex_raute := strings.LastIndex(to.String(content), "#")
-	fmt.Println("Raute: ", lastIndex_raute)
 
+	default_conf_string := fmt.Sprintf("#dynamic_chain\n#random_chain\nstrict_chain\n# Some timeouts in ms\ntcp_read_time_out 15000\ntcp_connect_time_out 8000\n[ProxyList]\n")
+	var proxys string
+	for i := 0; i < len(rein["ip"]); i++ {
+		proxys = fmt.Sprint(rein["protocol"][i], " ", rein["ip"][i], " ", rein["port"][i], "\n")
+		default_conf_string += proxys
+	}
+	default_conf := []byte(default_conf_string)
+
+	write_err_default_pacg_conf := ioutil.WriteFile("/etc/proxychains.conf", default_conf, 0644)
+	if write_err_default_pacg_conf != nil {
+		fmt.Println("Write /etc/proxychains.conf file ERROR: ", write_err_default_pacg_conf)
+		fmt.Println("Pls run command as sudo !!")
+		os.Exit(1)
+	} else {
+		fmt.Println(color.LightGreen("[+] "), "/etc/proxychains.conf successfully written.")
+	}
 }
 
 func main() {
@@ -294,9 +313,8 @@ func main() {
 		e.Close()
 	}
 
-	pc_exec := check_enviroment()
+	check_enviroment()
 	proxys_map = gimmeproxy(*howmuch)
 	check_proxys(proxys_map)
-	generate_config(pc_exec)
 
 }
