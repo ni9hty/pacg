@@ -39,6 +39,7 @@ Checking enviroment ..
 ### Brainstorm & notes
 - [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
 - [ ] implement parameter through how many countrys you want to chain, with latency checks (min/max) condition (if not fast enough, get a new one)
+- [ ] implement a function to re-check already generated configs and by whish replace single proxys
 - [ ] implement other free proxy sources (like modules) to be more flexible
 
 Feel free to comment or PR if you like.
