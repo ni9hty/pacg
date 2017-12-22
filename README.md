@@ -35,7 +35,6 @@ Checking enviroment ..
 - [x] Check local permission conditions
 - [x] if a request result the same proxy ip already checked via the api, result in a new check 
 - [x] implemented [goeip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
-- [ ] Proxy availability + latency check, if proxy timeout or to slow, get a new one (both conditions already catched)
 
 ### Brainstorm & notes
 - [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
