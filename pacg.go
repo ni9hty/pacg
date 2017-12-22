@@ -85,6 +85,7 @@ func check_enviroment() string {
 		fmt.Println(color.LightGreen("[+] "), "Icmp ping group config file have the correct settings.")
 	} else {
 		fmt.Println(color.LightRed("[-] "), "Icmp ping group settings are wrong, ping are only possible via sudo.\nPlease adjust with: sudo sysctl -w net.ipv4.ping_group_range=\"0   2147483647\"")
+		fmt.Println("Or set it permanently via \"echo net.ipv4.ping_group_range=\"0   2147483647\" >> /etc/sysctl.conf && sysctl -p")
 	}
 	myip := myip()
 	country := geoip_request(myip)
