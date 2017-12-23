@@ -222,7 +222,7 @@ func create_filtered_json(output *simplejson.Json) {
 }
 
 func check_proxys(proxy_map map[string][]string) map[string][]string {
-
+	fmt.Println("Checking", len(proxy_map["ip"]), "proxy(s) ..")
 	results := make(map[string][]string, len(proxy_map["ip"]))
 	//next_try := make(map[string][]string)
 

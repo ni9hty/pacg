@@ -28,6 +28,7 @@ Checking enviroment ..
 [+]  current user * can edit the config.
 [+]  Icmp ping group config file have the correct settings.
 [+]  We are starting from xx.xxx.xxx.xx in Germany
+Checking 2 proxy(s) ..
 [-]  121.52.141.104  latency > 200ms
 77.244.42.***:43524 open, time= 64.135386ms in FR - France
 121.52.141.***:8080 open, time= 283.265037ms in BR - Brazil
