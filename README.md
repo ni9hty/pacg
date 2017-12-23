@@ -1,6 +1,7 @@
 # Pacg - The Proxy(chain) Auto Config Generator
 
 Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i was too lazy to search for valid proxys and put them into my config. It's a golang script which check several conditions to be ready to work, grep proxys (2 by default) from [gimmeproxy API](https://gimmeproxy.com/) and write a custom proxychain config. 
+
 Proxychains available config settings *dynamic* (order like in the chain but dead proxys skipped) and *random* (in combo with chain_len setting) are obsolete.
 So "scrict_chain" is what we want, our own working, individual chain.
 
@@ -39,12 +40,12 @@ Checking 2 proxy(s) ..
 - [x] Parameter how many jumps in your chain do you want
 - [x] Check local permission conditions
 - [x] if a request result the same proxy ip already checked via the api, result in a new check 
-- [x] implemented [goeip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
+- [x] implemented [geoip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
 
 ### Brainstorm & notes
 - [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
 - [ ] implement parameter through how many countrys you want to chain
-- [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency (need some deep conceptual planing, start country already catched)
+- [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency (need some conceptual planing, start country already catched)
 - [ ] implement a function to re-check already generated configs and by whish replace single proxys
 - [ ] implement other free proxy sources (like modules) to be more flexible
 
