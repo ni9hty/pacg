@@ -221,7 +221,7 @@ func create_filtered_json(output *simplejson.Json) {
 	f.Close()
 }
 
-func check_proxys(proxy_map map[string][]string) {
+func check_proxys(proxy_map map[string][]string) map[string][]string {
 
 	results := make(map[string][]string, len(proxy_map["ip"]))
 	//next_try := make(map[string][]string)
@@ -272,16 +272,33 @@ func check_proxys(proxy_map map[string][]string) {
 		fmt.Println(results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
 	}
 
-	generate_config(results)
+	return results
 }
 
-func generate_config(rein map[string][]string) {
+func generate_config(rein map[string][]string, quiet_mode bool, proxy_dns bool) {
 	err := os.Truncate("/etc/proxychains.conf", 0)
 	if err != nil {
 		fmt.Println(color.LightRed("[-] "), "Could not reset config file ", err)
 	}
 
-	default_conf_string := fmt.Sprintf("#dynamic_chain\n#random_chain\nstrict_chain\n# Some timeouts in ms\ntcp_read_time_out 15000\ntcp_connect_time_out 8000\n[ProxyList]\n")
+	//dynamic quiet mode setting
+	var q string
+	if quiet_mode == true {
+		q = "quiet_mode"
+	} else {
+		q = "#quiet_mode"
+	}
+
+	//dynamic proxy_dns setting
+	var dns string
+	if proxy_dns == true {
+		dns = "proxy_dns"
+	} else {
+		dns = "#proxy_dns"
+	}
+
+	default_conf_string := fmt.Sprint("strict_chain\n# Some timeouts in ms\ntcp_read_time_out 15000\ntcp_connect_time_out 8000\n", q, "\n", dns, "\n[ProxyList]\n")
+
 	var proxys string
 	for i := 0; i < len(rein["ip"]); i++ {
 		proxys = fmt.Sprint(rein["protocol"][i], " ", rein["ip"][i], " ", rein["port"][i], "\n")
@@ -302,6 +319,8 @@ func generate_config(rein map[string][]string) {
 func main() {
 
 	howmuch := flag.Int("n", 2, "how much proxys do you want to use")
+	quiet := flag.Bool("q", false, "Generate config with quiet mode setting (no output from the library) - (default false)")
+	dns := flag.Bool("dns", false, "Generate config with proxy dns option, no leak for DNS data - (default false)")
 	flag.Parse()
 
 	fmt.Println("ProxyChain auto config generator.")
@@ -319,6 +338,6 @@ func main() {
 
 	check_enviroment()
 	proxys_map = gimmeproxy(*howmuch)
-	check_proxys(proxys_map)
-
+	checked_proxys := check_proxys(proxys_map)
+	generate_config(checked_proxys, *quiet, *dns)
 }

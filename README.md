@@ -1,13 +1,17 @@
 # Pacg - The Proxy(chain) Auto Config Generator
 
-Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i was too lazy to search for valid proxys and put them into my config. It's a golang script which check several conditions to be ready to work, grep some proxys (2 by default) from [gimmeproxy API](https://gimmeproxy.com/) and write a custom proxychain config. 
+Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i was too lazy to search for valid proxys and put them into my config. It's a golang script which check several conditions to be ready to work, grep proxys (2 by default) from [gimmeproxy API](https://gimmeproxy.com/) and write a custom proxychain config. 
+Proxychains available config settings *dynamic* (order like in the chain but dead proxys skipped) and *random* (in combo with chain_len setting) are obsolete.
+So "scrict_chain" is what we want, our own working, individual chain.
 
-Commandline parameter will be increased.
 ```bash
-./pacg --help             
+./pacg --help            
 Usage of ./pacg:
+  -dns
+    	Generate config with proxy dns option, no leak for DNS data - (default false)
   -n int
     	how much proxys do you want to use (default 2)
+  -q	Generate config with quiet mode setting (no output from the library) - (default false)
 ```
 Default gimmeproxy curl = 
 ```bash
@@ -38,7 +42,8 @@ Checking enviroment ..
 
 ### Brainstorm & notes
 - [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
-- [ ] implement parameter through how many countrys you want to chain, with latency checks (min/max) condition (if not fast enough, get a new one)
+- [ ] implement parameter through how many countrys you want to chain
+- [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency (need some deep conceptual planing, start country already catched)
 - [ ] implement a function to re-check already generated configs and by whish replace single proxys
 - [ ] implement other free proxy sources (like modules) to be more flexible
 
