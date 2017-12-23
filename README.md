@@ -46,7 +46,7 @@ Checking 2 proxy(s) ..
 - [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
 - [ ] implement parameter through how many countrys you want to chain
 - [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency (need some conceptual planing, start country already catched)
-- [ ] implement a function to re-check already generated configs and by whish replace single proxys
-- [ ] implement other free proxy sources (like modules) to be more flexible
+- [ ] implement a function to re-check already generated config and by whish replace single proxys, like re-check availability/latency for currently inserted proxys
+- [ ] implement other free proxy sources, slapword html-tables_to_json updateable regular/manually by an extra config file with links
 
 Feel free to comment or PR if you like.
