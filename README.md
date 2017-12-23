@@ -3,7 +3,7 @@
 Related to the [Proxychain](https://github.com/rofl0r/proxychains-ng) package, i was too lazy to search for valid proxys and put them into my config. It's a golang script which check several conditions to be ready to work, grep proxys (2 by default) from [gimmeproxy API](https://gimmeproxy.com/) and write a custom proxychain config. 
 
 Proxychains available config settings *dynamic* (order like in the chain but dead proxys skipped) and *random* (in combo with chain_len setting) are obsolete.
-So "scrict_chain" is what we want, our own working, individual chain.
+So "strict_chain" is what we want, our own working, individual chain.
 
 ```bash
 ./pacg --help            
