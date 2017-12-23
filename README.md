@@ -14,10 +14,6 @@ Usage of ./pacg:
     	how much proxys do you want to use (default 2)
   -q	Generate config with quiet mode setting (no output from the library) - (default false)
 ```
-Default gimmeproxy curl = 
-```bash
-https://gimmeproxy.com/api/getProxy?anonymityLevel=1&?protocol=socks5&maxCheckPeriod=300
-```
  
 Example:
 ```bash
