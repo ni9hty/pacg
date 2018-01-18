@@ -86,6 +86,7 @@ func check_enviroment() string {
 	} else {
 		fmt.Println(color.LightRed("[-] "), "Icmp ping group settings are wrong, ping are only possible via sudo.\nPlease adjust with: sudo sysctl -w net.ipv4.ping_group_range=\"0   2147483647\"")
 		fmt.Println("Or set it permanently via \"echo net.ipv4.ping_group_range=\"0   2147483647\" >> /etc/sysctl.conf && sysctl -p")
+		os.Exit(1)
 	}
 	myip := myip()
 	country := geoip_request(myip)
@@ -321,6 +322,7 @@ func main() {
 	howmuch := flag.Int("n", 2, "how much proxys do you want to use")
 	quiet := flag.Bool("q", false, "Generate config with quiet mode setting (no output from the library) - (default false)")
 	dns := flag.Bool("dns", false, "Generate config with proxy dns option, no leak for DNS data - (default false)")
+	crawler := flag.Bool("crawler", false, "switch to crawler mode to generate own proxydb from urls file")
 	flag.Parse()
 
 	fmt.Println("ProxyChain auto config generator.")
@@ -334,6 +336,11 @@ func main() {
 		}
 		e.Truncate(0)
 		e.Close()
+	}
+
+	if *crawler {
+		read_url_list()
+		os.Exit(0)
 	}
 
 	check_enviroment()

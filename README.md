@@ -8,6 +8,8 @@ So "strict_chain" is what we want, our own working, individual chain.
 ```bash
 ./pacg --help            
 Usage of ./pacg:
+  -crawler
+    	switch to crawler mode to generate own proxydb from urls file
   -dns
     	Generate config with proxy dns option, no leak for DNS data - (default false)
   -n int
@@ -37,12 +39,13 @@ Checking 2 proxy(s) ..
 - [x] Check local permission conditions
 - [x] if a request result the same proxy ip already checked via the api, result in a new check 
 - [x] implemented [geoip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
+- [/] implement other free proxy sources with a crawler mode, slapword html-tables_to_json updateable regular/manually from an extra file with links (started)
+
 
 ### Brainstorm & notes
 - [ ] Proxy availability + latency check, if a proxy timeout occur, get a new one (both conditions already catched)
 - [ ] implement parameter through how many countrys you want to chain
 - [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency (need some conceptual planing, start country already catched)
 - [ ] implement a function to re-check already generated config and by whish replace single proxys, like re-check availability/latency for currently inserted proxys
-- [ ] implement other free proxy sources, slapword html-tables_to_json updateable regular/manually by an extra config file with links
 
 Feel free to comment or PR if you like.
