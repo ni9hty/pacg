@@ -39,7 +39,7 @@ Checking 2 proxy(s) ..
 - [x] Check local permission conditions
 - [x] if a request result the same proxy ip already checked via the api, result in a new check 
 - [x] implemented [geoip](https://github.com/rainycape/geoip) function for generating smart routes from your start country (db already in this repo and home/start ip already catched)
-- [/] implement other free proxy sources with a crawler mode, slapword html-tables_to_json updateable regular/manually from an extra file with links (started)
+- [x] implement other free proxy sources with a crawler mode, slapword html-tables_to_json updateable regular/manually from an extra file with links (started)
 
 
 ### Brainstorm & notes
