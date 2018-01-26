@@ -222,7 +222,7 @@ func create_filtered_json(output *simplejson.Json) {
 	f.Close()
 }
 
-func check_proxys(proxy_map map[string][]string) map[string][]string {
+func check_proxys(proxy_map map[string][]string, proxy_count int) map[string][]string {
 	fmt.Println("Checking", len(proxy_map["ip"]), "proxy(s) ..")
 	results := make(map[string][]string, len(proxy_map["ip"]))
 	//next_try := make(map[string][]string)
@@ -269,8 +269,10 @@ func check_proxys(proxy_map map[string][]string) map[string][]string {
 		i++
 	}
 
-	for j := 0; j < len(results["con_string"]); j++ {
+	for _, _ = range results["con_string"] {
+		j := 0
 		fmt.Println(results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
+		j++
 	}
 
 	return results
@@ -345,6 +347,6 @@ func main() {
 
 	check_enviroment()
 	proxys_map = gimmeproxy(*howmuch)
-	checked_proxys := check_proxys(proxys_map)
+	checked_proxys := check_proxys(proxys_map, *howmuch)
 	generate_config(checked_proxys, *quiet, *dns)
 }
