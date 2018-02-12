@@ -224,9 +224,13 @@ func create_filtered_json(output *simplejson.Json) {
 
 func check_proxys(proxy_map map[string][]string, proxy_count int) map[string][]string {
 	fmt.Println("Checking", len(proxy_map["ip"]), "proxy(s) ..")
-	results := make(map[string][]string, len(proxy_map["ip"]))
-	//next_try := make(map[string][]string)
+	temp := make(map[string][]string, 1)
+	//results := make(map[string][]string, len(proxy_map["ip"]))
+	results := make(map[string][]string, proxy_count)
+	nexttry := false
+	var latency string
 
+next_try:
 	//ping them
 	for _, ip := range proxy_map["ip"] {
 		p, err := ping.NewPinger(ip)
@@ -237,26 +241,36 @@ func check_proxys(proxy_map map[string][]string, proxy_count int) map[string][]s
 		p.SetPrivileged(false)
 		p.Timeout = time.Second * 2
 		p.OnRecv = func(pkt *ping.Packet) {
-			//fmt.Println(pkt.Nbytes, "bytes from", pkt.IPAddr, "time=", pkt.Rtt)
+			fmt.Println(pkt.Nbytes, "bytes from", pkt.IPAddr, "time=", pkt.Rtt)
 			if pkt.Rtt > time.Millisecond*200 {
 				fmt.Println(color.GGreen("[-] "), ip, " latency > 200ms")
 				//here if latency condition kicks in, get a new one until len(proxy_map) ends
 			}
-			results["time"] = append(results["time"], to.String(pkt.Rtt))
+			latency = to.String(pkt.Rtt)
+
 		}
 		p.Run()
+		if latency != "" {
+			results["time"] = append(results["time"], latency)
+		} else {
+			results["time"] = append(results["time"], "icmp blocked")
+		}
+		latency = ""
 	}
 
 	//check if port open
 	i := 0
+
 	country := ""
 	for _, _ = range proxy_map["ip"] {
 		country = ""
 		con_string := fmt.Sprint(proxy_map["ip"][i], ":", proxy_map["port"][i])
 		_, err := net.DialTimeout("tcp", con_string, time.Second*5)
 		if err != nil {
-			fmt.Println("Proxy not available ", err)
-			//here implement new try until len(proxy_map) ends
+			fmt.Println(color.LightRed("[-] "), "Proxy not available ", err, "try next ..")
+			nexttry = true
+			delone := len(results["time"]) - 1
+			results["time"] = results["time"][:delone]
 		} else {
 			results["con_string"] = append(results["con_string"], con_string)
 			results["ip"] = append(results["ip"], proxy_map["ip"][i])
@@ -269,16 +283,34 @@ func check_proxys(proxy_map map[string][]string, proxy_count int) map[string][]s
 		i++
 	}
 
-	for _, _ = range results["con_string"] {
-		j := 0
-		fmt.Println(results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
-		j++
+	if len(results["con_string"]) < proxy_count && nexttry == true {
+		delete(proxy_map, "ip")
+		delete(proxy_map, "port")
+		delete(proxy_map, "country")
+		delete(proxy_map, "protocol")
+		temp = make(map[string][]string, 1)
+		temp = gimmeproxy(1)
+		proxy_map["ip"] = append(proxy_map["ip"], temp["ip"][0])
+		proxy_map["port"] = append(proxy_map["port"], temp["port"][0])
+		proxy_map["country"] = append(proxy_map["country"], temp["country"][0])
+		proxy_map["protocol"] = append(proxy_map["protocol"], temp["protocol"][0])
+		goto next_try
+	}
+
+	for j := 0; j < len(results["con_string"]); j++ {
+		fmt.Println("[", j, "]", results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
 	}
 
 	return results
 }
 
 func generate_config(rein map[string][]string, quiet_mode bool, proxy_dns bool) {
+
+	/*for j := 0; j < len(rein["ip"])-1; j++ {
+		//fmt.Println(rein["con_string"][j], "open, time=", rein["time"][j], "in", rein["tld"][j], "-", rein["country"][j])
+		fmt.Println(rein)
+	}*/
+
 	err := os.Truncate("/etc/proxychains.conf", 0)
 	if err != nil {
 		fmt.Println(color.LightRed("[-] "), "Could not reset config file ", err)
