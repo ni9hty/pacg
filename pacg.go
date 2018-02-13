@@ -233,6 +233,7 @@ func check_proxys(proxy_map map[string][]string, proxy_count int) map[string][]s
 next_try:
 	//ping them
 	for _, ip := range proxy_map["ip"] {
+		q := 0
 		p, err := ping.NewPinger(ip)
 		if err != nil {
 			fmt.Println("couldn't ping: ", err)
@@ -254,8 +255,10 @@ next_try:
 			results["time"] = append(results["time"], latency)
 		} else {
 			results["time"] = append(results["time"], "icmp blocked")
+			fmt.Println("0 bytes from", proxy_map["ip"][q], "time= icmp blocked")
 		}
 		latency = ""
+		q++
 	}
 
 	//check if port open
@@ -269,8 +272,13 @@ next_try:
 		if err != nil {
 			fmt.Println(color.LightRed("[-] "), "Proxy not available ", err, "try next ..")
 			nexttry = true
-			delone := len(results["time"]) - 1
-			results["time"] = results["time"][:delone]
+			if i == 0 {
+				delete(results, "time")
+			} else {
+				del_last_one := len(results["time"]) - 1
+				results["time"] = results["time"][:del_last_one]
+			}
+
 		} else {
 			results["con_string"] = append(results["con_string"], con_string)
 			results["ip"] = append(results["ip"], proxy_map["ip"][i])
@@ -298,9 +306,10 @@ next_try:
 	}
 
 	for j := 0; j < len(results["con_string"]); j++ {
-		fmt.Println("[", j, "]", results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
+		fmt.Println("[", j+1, "]", results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
 	}
 
+	fmt.Print("\n", color.LightGreen("[+] "), "Found ", proxy_count, " Proxys.\n")
 	return results
 }
 

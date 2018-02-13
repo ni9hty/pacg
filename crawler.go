@@ -15,7 +15,7 @@ import (
 
 func read_url_list() []string {
 	var urls_greped []string
-	fmt.Println("Crawler mode activated, reading URLs from urls file..")
+	fmt.Println("Entering crawler mode, reading URLs from urls file..")
 	urls, err := ioutil.ReadFile("urls")
 	if err != nil {
 		fmt.Println(color.LightRed("[-] "), "urls file not found. ", err)
