@@ -85,7 +85,7 @@ func check_enviroment() string {
 		fmt.Println(color.LightGreen("[+] "), "Icmp ping group config file have the correct settings.")
 	} else {
 		fmt.Println(color.LightRed("[-] "), "Icmp ping group settings are wrong, ping are only possible via sudo.\nPlease adjust with: sudo sysctl -w net.ipv4.ping_group_range=\"0   2147483647\"")
-		fmt.Println("Or set it permanently via \"echo net.ipv4.ping_group_range=\"0   2147483647\" >> /etc/sysctl.conf && sysctl -p")
+		fmt.Println("Or set it permanently via 'echo net.ipv4.ping_group_range=0   2147483647' >> /etc/sysctl.conf && sysctl -p (as root)")
 		os.Exit(1)
 	}
 	myip := myip()
@@ -268,12 +268,14 @@ next_try:
 	for _, _ = range proxy_map["ip"] {
 		country = ""
 		con_string := fmt.Sprint(proxy_map["ip"][i], ":", proxy_map["port"][i])
+		start := time.Now()
 		_, err := net.DialTimeout("tcp", con_string, time.Second*5)
+		ms := time.Since(start)
 		if err != nil {
 			fmt.Println(color.LightRed("[-] "), "Proxy not available ", err, "try next ..")
 			nexttry = true
 			if i == 0 {
-				delete(results, "time")
+				delete(results, "time") //if first proxy unavailable, delete time entry
 			} else {
 				del_last_one := len(results["time"]) - 1
 				results["time"] = results["time"][:del_last_one]
@@ -287,6 +289,11 @@ next_try:
 			results["tld"] = append(results["tld"], proxy_map["country"][i])
 			country = geoip_request(proxy_map["ip"][i])
 			results["country"] = append(results["country"], country)
+			if len(results["ip"]) > 0 {
+				//fmt.Println("tcp ping test: ", results["ip"][i], " ", ms)
+				results["tcp_ping"] = append(results["tcp_ping"], to.String(ms))
+			}
+
 		}
 		i++
 	}
@@ -306,7 +313,12 @@ next_try:
 	}
 
 	for j := 0; j < len(results["con_string"]); j++ {
-		fmt.Println("[", j+1, "]", results["con_string"][j], "open, time=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
+		if results["time"][j] == "icmp blocked" {
+			fmt.Println("[", j+1, "]", results["con_string"][j], "open, time_tcp=", results["tcp_ping"][j], "in", results["tld"][j], "-", results["country"][j])
+		} else {
+			fmt.Println("[", j+1, "]", results["con_string"][j], "open, time_icmp=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
+		}
+
 	}
 
 	fmt.Print("\n", color.LightGreen("[+] "), "Found ", proxy_count, " Proxys.\n")
