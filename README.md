@@ -28,9 +28,12 @@ Checking enviroment ..
 [+]  Icmp ping group config file have the correct settings.
 [+]  We are starting from xx.xxx.xxx.xx in Germany
 Checking 2 proxy(s) ..
-[-]  121.52.141.104  latency > 200ms
-77.244.42.***:43524 open, time= 64.135386ms in FR - France
-121.52.141.***:8080 open, time= 283.265037ms in BR - Brazil
+16 bytes from 67.149.xx.xx time= 149.64275ms
+0 bytes from 67.149.xx.xx time= icmp blocked
+[ 1 ] 67.149.xx.xx:21937 open, time_icmp= 149.64275ms in US - United States
+[ 2 ] 207.118.xx.xx:27509 open, time_tcp= 282.127206ms in US - United States
+
+[+] Found 2 Proxys.
 [+]  /etc/proxychains.conf successfully written.
 ```
 
