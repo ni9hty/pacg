@@ -48,7 +48,8 @@ Checking 2 proxy(s) ..
 
 ### Brainstorm & notes
 - [ ] implement parameter through how many countrys you want to chain
-- [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency (need some conceptual planing, start country already catched)
+- [ ] implement function to generate smart and fast routes through your target via countrys in an order with lowest latency 
 - [ ] implement a function to re-check already generated config and by whish replace single proxys, like re-check availability/latency for currently inserted proxys
+- [ ] In combination with the crawler, create db of suitable proxys as a service like Tor
 
 Feel free to comment or PR if you like.
