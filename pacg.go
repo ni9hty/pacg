@@ -17,7 +17,6 @@ import (
 	"github.com/bclicn/color"
 	"github.com/bitly/go-simplejson"
 	"github.com/rainycape/geoip"
-	"github.com/sparrc/go-ping"
 	"menteslibres.net/gosexy/to"
 )
 
@@ -25,6 +24,7 @@ func check_enviroment() string {
 	fmt.Println("Checking enviroment ..")
 	//proxychain executeable
 	var output_pc string
+	var output_pc1 string
 
 	cmd_check_pc := exec.Command("locate", "proxychain")
 	output_check_pc, err := cmd_check_pc.CombinedOutput()
@@ -32,8 +32,8 @@ func check_enviroment() string {
 		fmt.Println(color.LightRed("[-] "), "locate command failed: ", err)
 	}
 	if strings.Contains(to.String(output_check_pc), "proxychains4") == true {
-		find_string := strings.Index(to.String(output_check_pc), "/usr/local/bin/proxychains4")
-		output_pc = to.String(output_check_pc)[find_string : find_string+27]
+		find_string := strings.Index(to.String(output_check_pc), "/usr/bin/proxychains4")
+		output_pc = to.String(output_check_pc)[find_string : find_string+21]
 		fmt.Println(color.LightGreen("[+] "), output_pc, "[found]")
 	} else {
 		fmt.Println(color.LightRed("[-] "), "No proxychain executeable found, unable to autoupdate proxy config entries.\nPlease follow instructions on https://github.com/rofl0r/proxychains-ng")
@@ -56,11 +56,14 @@ func check_enviroment() string {
 		fmt.Println(color.LightRed("[-] "), "Can't get current username. ", err)
 		os.Exit(1)
 	}
-	User := user.Username
+	U := user.Username
+	User := strings.Replace(U, " ", "", -1)
 
 	user_perm_splitted := strings.Split(to.String(output_check_ls), " ")
 	config_user_owner_perm := user_perm_splitted[3]
 	config_user_write_perm := user_perm_splitted[0]
+	find_string1 := strings.Index(to.String(output_check_pc), "/etc/proxychains.conf")
+	output_pc1 = to.String(output_check_pc)[find_string1 : find_string1+21]
 
 	if strings.Contains(to.String(User), config_user_owner_perm) {
 		fmt.Println(color.LightGreen("[+] "), "current user", User, "is the owner of /etc/proxychains.conf")
@@ -68,26 +71,15 @@ func check_enviroment() string {
 			fmt.Println(color.LightGreen("[+] "), "current user", User, "can edit the config.")
 		} else {
 			fmt.Println(color.LightRed("[-] "), "current user", User, "can NOT edit the config.")
-			fmt.Println("Please adjust file permissions : chmod +w", output_pc)
+			fmt.Println("Please adjust file permissions : chmod +w", output_pc1)
 			os.Exit(1)
 		}
 	} else {
 		fmt.Println(color.LightRed("[-] "), "current user", User, "is not the owner.")
-		fmt.Println("Please adjust file permissions : chown", User, ":", User, output_pc)
+		chown := fmt.Sprint(User, ":", User)
+		fmt.Println("Please adjust file permissions : chown", chown, output_pc1)
 	}
 
-	sys_ping := fmt.Sprint("/proc/sys/net/ipv4/ping_group_range")
-	content, err := ioutil.ReadFile(sys_ping)
-	if err != nil {
-		fmt.Println(color.LightRed("[-] "), "Icmp ping group config file not found. Check proxy(s) via ping might be only possible via sudo. ", err)
-	}
-	if strings.Contains(to.String(content), "0\t2147483647") {
-		fmt.Println(color.LightGreen("[+] "), "Icmp ping group config file have the correct settings.")
-	} else {
-		fmt.Println(color.LightRed("[-] "), "Icmp ping group settings are wrong, ping are only possible via sudo.\nPlease adjust with: sudo sysctl -w net.ipv4.ping_group_range=\"0   2147483647\"")
-		fmt.Println("Or set it permanently via 'echo net.ipv4.ping_group_range=0   2147483647' >> /etc/sysctl.conf && sysctl -p (as root)")
-		os.Exit(1)
-	}
 	myip := myip()
 	country := geoip_request(myip)
 	fmt.Println(color.LightGreen("[+] "), "We are starting from", myip, "in", country)
@@ -228,39 +220,8 @@ func check_proxys(proxy_map map[string][]string, proxy_count int) map[string][]s
 	//results := make(map[string][]string, len(proxy_map["ip"]))
 	results := make(map[string][]string, proxy_count)
 	nexttry := false
-	var latency string
 
 next_try:
-	//ping them
-	for _, ip := range proxy_map["ip"] {
-		q := 0
-		p, err := ping.NewPinger(ip)
-		if err != nil {
-			fmt.Println("couldn't ping: ", err)
-		}
-		p.Count = 1
-		p.SetPrivileged(false)
-		p.Timeout = time.Second * 2
-		p.OnRecv = func(pkt *ping.Packet) {
-			fmt.Println(pkt.Nbytes, "bytes from", pkt.IPAddr, "time=", pkt.Rtt)
-			if pkt.Rtt > time.Millisecond*200 {
-				fmt.Println(color.GGreen("[-] "), ip, " latency > 200ms")
-				//here if latency condition kicks in, get a new one until len(proxy_map) ends
-			}
-			latency = to.String(pkt.Rtt)
-
-		}
-		p.Run()
-		if latency != "" {
-			results["time"] = append(results["time"], latency)
-		} else {
-			results["time"] = append(results["time"], "icmp blocked")
-			fmt.Println("0 bytes from", proxy_map["ip"][q], "time= icmp blocked")
-		}
-		latency = ""
-		q++
-	}
-
 	//check if port open
 	i := 0
 
@@ -313,12 +274,7 @@ next_try:
 	}
 
 	for j := 0; j < len(results["con_string"]); j++ {
-		if results["time"][j] == "icmp blocked" {
-			fmt.Println("[", j+1, "]", results["con_string"][j], "open, time_tcp=", results["tcp_ping"][j], "in", results["tld"][j], "-", results["country"][j])
-		} else {
-			fmt.Println("[", j+1, "]", results["con_string"][j], "open, time_icmp=", results["time"][j], "in", results["tld"][j], "-", results["country"][j])
-		}
-
+		fmt.Println("[", j+1, "]", results["con_string"][j], "open, time_tcp=", results["tcp_ping"][j], "in", results["tld"][j], "-", results["country"][j])
 	}
 
 	fmt.Print("\n", color.LightGreen("[+] "), "Found ", proxy_count, " Proxys.\n")
@@ -378,6 +334,7 @@ func main() {
 	quiet := flag.Bool("q", false, "Generate config with quiet mode setting (no output from the library) - (default false)")
 	dns := flag.Bool("dns", false, "Generate config with proxy dns option, no leak for DNS data - (default false)")
 	crawler := flag.Bool("crawler", false, "switch to crawler mode to generate own proxydb from urls file")
+	gproxy := flag.Bool("gimmeproxy", false, "fetch gimmeproxy.com for proxys, check them and write a proxychain config")
 	flag.Parse()
 
 	fmt.Println("ProxyChain auto config generator.")
@@ -398,8 +355,16 @@ func main() {
 		os.Exit(0)
 	}
 
-	check_enviroment()
-	proxys_map = gimmeproxy(*howmuch)
-	checked_proxys := check_proxys(proxys_map, *howmuch)
-	generate_config(checked_proxys, *quiet, *dns)
+	if *gproxy {
+		check_enviroment()
+		proxys_map = gimmeproxy(*howmuch)
+		checked_proxys := check_proxys(proxys_map, *howmuch)
+		generate_config(checked_proxys, *quiet, *dns)
+	}
+
+	if *crawler == false && *gproxy == false {
+		flag.Usage()
+		os.Exit(0)
+	}
+
 }
